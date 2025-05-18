@@ -102,13 +102,13 @@ public class MyCloudSandboxImpl implements Sandbox {
                 client = HttpClients.createDefault();
                 System.out.println("token is\t" + token);
 
-                HttpGet httpGet = new HttpGet(url + "/" + token);
+                HttpGet httpGet = new HttpGet(url + "/" + token + "?base64_encoded=true");
                 HttpResponse response = client.execute(httpGet);
                 client.close();
                 if (response.getStatusLine().getStatusCode() / 100 != 2) {
                     throw new BusinessException(ErrorCode.SYSTEM_ERROR, "请求沙箱失败");
                 }
-
+// ALTER DATABASE znoj CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
                 JSONObject jsonObj = JSONUtil.parseObj(EntityUtils.toString(response.getEntity(), "UTF-8"));
                 Integer status = JSONUtil.parseObj(jsonObj.get("status")).get("id", Integer.class);
 
@@ -116,7 +116,7 @@ public class MyCloudSandboxImpl implements Sandbox {
 
                 if (status == 3 || status == 4) {
                     executeCodeResponse.setStatus(status);
-                    String output = jsonObj.get("stdout").toString();
+                    String output = Base64.decodeStr(jsonObj.get("stdout").toString());
                     outputs.add(output);
                     System.out.println(output);
                     int timeTmp = (int)(jsonObj.get("time", Double.class) * 1000);
@@ -149,7 +149,7 @@ public class MyCloudSandboxImpl implements Sandbox {
         }
         client.close();
         if (cnt == tokens.size()) executeCodeResponse.setStatus(3);
-        else if (executeCodeResponse.getStatus() == 2) {
+        else if (executeCodeResponse.getStatus() < 3) {
             return executeCodeResponse;
         }
         executeCodeResponse.setOutputs(outputs);

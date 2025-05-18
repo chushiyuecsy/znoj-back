@@ -48,7 +48,6 @@ com\zn\znoj\common\ErrorCode.class
 com\zn\znoj\common\PageRequest.class
 com\zn\znoj\utils\StringUtils.class
 com\zn\znoj\model\dto\question\QuestionAddRequest.class
-com\zn\znoj\judge\sandbox\impl\ThreePartySandboxImpl.class
 com\zn\znoj\service\QuestionService.class
 com\zn\znoj\service\JudgeTaskService.class
 com\zn\znoj\judge\model\SandboxOut.class

@@ -11,6 +11,7 @@ import com.zn.znoj.judge.sandbox.model.ExecuteCodeResponse;
 import com.zn.znoj.model.entity.Question;
 import com.zn.znoj.model.entity.RunSubmit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.store.Lock;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,7 @@ public class UpdateStatus {
 
     // 在类中定义一个锁容器
     private final Map<Long, Object> locks = new ConcurrentHashMap<>();
+
     public void doUpdateStatus(RunSubmit runSubmit) throws IOException, InterruptedException, CloneNotSupportedException {
         // 获取tokens
         String tokensStr = runSubmit.getTokens();
@@ -61,6 +63,17 @@ public class UpdateStatus {
 //            Question question = questionService.getById(runSubmit.getQuestionId());
 //            question.setAcceptedNum(question.getAcceptedNum() + 1);
 //            questionService.updateById(question);
+            Lock lock = new Lock() {
+                @Override
+                public void close() throws IOException {
+
+                }
+
+                @Override
+                public void ensureValid() throws IOException {
+
+                }
+            };
             locks.putIfAbsent(runSubmit.getRunId(), new Object());
             Object runIdLock = locks.get(runSubmit.getRunId());
             synchronized (runIdLock) {
